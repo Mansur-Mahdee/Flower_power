@@ -8,27 +8,33 @@ from transformers import RagTokenizer, RagRetriever, RagTokenForGeneration
 
 # Function to download the Kaggle dataset using API token
 def download_kaggle_dataset():
-    # Path where the Kaggle API token should be placed
-    kaggle_json_path = "/root/.kaggle/kaggle.json"
+    # Get Kaggle credentials from Streamlit secrets
+    kaggle_username = st.secrets["username"]
+    kaggle_key = st.secrets["key"]
     
-    # Ensure that the Kaggle token is set up (this assumes you're passing the token path in your Streamlit app or via environment variables)
-    if not os.path.exists(kaggle_json_path):
-        st.error("Kaggle API token not found. Please upload your 'kaggle.json' file.")
+    # Ensure the credentials are available in the Streamlit secrets
+    if not kaggle_username or not kaggle_key:
+        st.error("Kaggle API token not found in Streamlit secrets. Please add your 'kaggle.json' details.")
         return None
-    
+
+    # Create the directory for the Kaggle API token and write the credentials to the file
     os.makedirs('/root/.kaggle', exist_ok=True)
-    os.rename("kaggle.json", "/root/.kaggle/kaggle.json")  # Move your Kaggle token here
+    with open("/root/.kaggle/kaggle.json", "w") as f:
+        f.write(f'{{"username": "{kaggle_username}", "key": "{kaggle_key}"}}')
     
-    # Install necessary packages
+    # Install necessary packages (in case they are not installed already)
     os.system("pip install kaggle")  # Install Kaggle API if not installed
+    
+    # Download the dataset from Kaggle
     os.system("kaggle datasets download -d jenlooper/language-of-flowers")  # Download the dataset from Kaggle
     
     # Extract the dataset (assuming it's in zip format)
     os.system("unzip language-of-flowers.zip -d language_of_flowers")  # Adjust if the dataset is in a different format
     
+    # Define the path to the dataset after extraction
     dataset_path = "language_of_flowers/language-of-flowers.csv"  # Adjust based on the extracted files
+    
     return dataset_path
-
 # Function to get flower information based on the flower name
 def generate_flower_info(flower_name, flower_info_dict):
     """
