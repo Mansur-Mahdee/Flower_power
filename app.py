@@ -9,8 +9,8 @@ from transformers import RagTokenizer, RagRetriever, RagTokenForGeneration
 # Function to download the Kaggle dataset using API token
 def download_kaggle_dataset():
     # Get Kaggle credentials from Streamlit secrets
-    kaggle_username = st.secrets["kaggle_username"]
-    kaggle_key = st.secrets["kaggle_key"]
+    kaggle_username = st.secrets["username"]
+    kaggle_key = st.secrets["key"]
     
     # Ensure the credentials are available in the Streamlit secrets
     if not kaggle_username or not kaggle_key:
