@@ -8,6 +8,12 @@ from transformers import GPT2LMHeadModel, GPT2Tokenizer, pipeline
 from transformers import RagTokenizer, RagRetriever, RagTokenForGeneration
 
 # Function to download the Kaggle dataset using API token
+import os
+import subprocess
+import pandas as pd
+import streamlit as st
+
+# Function to download the Kaggle dataset using API token
 def download_kaggle_dataset():
     # Get Kaggle credentials from Streamlit secrets
     kaggle_username = st.secrets["username"]
@@ -28,17 +34,36 @@ def download_kaggle_dataset():
     # Download the dataset from Kaggle using the Kaggle API
     subprocess.run(["kaggle", "datasets", "download", "-d", "jenlooper/language-of-flowers"], check=True)
     
-    # Path to the dataset (no need to unzip)
-    dataset_path = "/root/.cache/kagglehub/datasets/jenlooper/language-of-flowers/versions/2/language-of-flowers.csv"
+    # List all files in the current directory to check where the dataset is located
+    download_dir = "/tmp"  # The temporary directory where the dataset is downloaded
+    downloaded_files = os.listdir(download_dir)
 
-    # Check if the dataset file exists
-    if not os.path.exists(dataset_path):
-        st.error(f"Dataset file not found at {dataset_path}")
+    # Print the files to Streamlit to inspect them
+    st.write("Downloaded files:")
+    st.write(downloaded_files)
+
+    # Look for the dataset file (assume it's in the current directory after download)
+    dataset_path = None
+    for file in downloaded_files:
+        if file.endswith('.csv'):
+            dataset_path = os.path.join(download_dir, file)
+            break
+
+    # Check if dataset file exists
+    if not dataset_path:
+        st.error("Dataset file not found in the expected directory.")
         return None
-    
-    # If the file exists, return the dataset path
+
+    # Return the dataset path
     st.write("Dataset found successfully!")
     return dataset_path
+
+# Call the function and use the dataset
+dataset_path = download_kaggle_dataset()
+if dataset_path:
+    data = pd.read_csv(dataset_path)
+    st.write(data.head())
+
 
 # Call the function and use the dataset
 dataset_path = download_kaggle_dataset()
