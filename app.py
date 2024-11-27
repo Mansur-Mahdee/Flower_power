@@ -25,18 +25,33 @@ def download_kaggle_dataset():
         f.write(f'{{"username": "{kaggle_username}", "key": "{kaggle_key}"}}')
     
     # Install necessary packages (if they are not installed already)
-    os.system("pip install kaggle")  # Install Kaggle API if not installed
+    # It's better to add 'kaggle' to requirements.txt, but for now, we'll install it on the fly
+    subprocess.run(["pip", "install", "kaggle"], check=True)
     
     # Download the dataset from Kaggle
-    os.system("kaggle datasets download -d jenlooper/language-of-flowers")  # Download the dataset from Kaggle
+    subprocess.run(["kaggle", "datasets", "download", "-d", "jenlooper/language-of-flowers"], check=True)
     
     # Extract the dataset (assuming it's in zip format)
-    os.system("unzip language-of-flowers.zip -d language_of_flowers")  # Adjust if the dataset is in a different format
+    subprocess.run(["unzip", "language-of-flowers.zip", "-d", "language_of_flowers"], check=True)
     
     # Define the path to the dataset after extraction
-    dataset_path = "language_of_flowers/language-of-flowers.csv"  # Adjust based on the extracted files
+    dataset_path = "/tmp/language_of_flowers/language-of-flowers.csv"  # Adjust path after extraction
     
+    # Check if dataset exists
+    if os.path.exists(dataset_path):
+        st.write("Dataset downloaded and extracted successfully!")
+    else:
+        st.error(f"Dataset file not found at {dataset_path}")
+        return None
+    
+    # Return the dataset path
     return dataset_path
+
+# Call the function and use the dataset
+dataset_path = download_kaggle_dataset()
+if dataset_path:
+    data = pd.read_csv(dataset_path)
+    st.write(data.head())
  
 # Function to get flower information based on the flower name
 def generate_flower_info(flower_name, flower_info_dict):
