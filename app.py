@@ -7,7 +7,7 @@ import subprocess
 import streamlit as st
 from transformers import GPT2LMHeadModel, GPT2Tokenizer, pipeline
 from transformers import RagTokenizer, RagRetriever, RagTokenForGeneration
-
+from datasets import load_dataset
 def download_kaggle_dataset():
     # Get Kaggle credentials from Streamlit secrets
     kaggle_username = st.secrets["username"]
@@ -141,12 +141,16 @@ if dataset_path is not None:
     # Create a dictionary to map flower names to meanings
     flower_info_dict = dict(zip(data['Flower'], data['Meaning']))
 
-    # Initialize the RAG model components
+    dataset = load_dataset("wiki_dpr", trust_remote_code=True)
     tokenizer = RagTokenizer.from_pretrained("facebook/rag-token-nq")
-    retriever = RagRetriever.from_pretrained("facebook/rag-token-nq", index_name="exact", use_dummy_dataset=True)
+    retriever = RagRetriever.from_pretrained(
+        "facebook/rag-token-nq", 
+        index_name="exact", 
+        use_dummy_dataset=True, 
+        trust_remote_code=True  # Add trust_remote_code=True to the retriever
+)
     model = RagTokenForGeneration.from_pretrained("facebook/rag-token-nq", retriever=retriever)
     tokenizer.pad_token_id = 0
-
     # Define the RAG pipeline for text generation
     rag_pipeline = pipeline("text-generation", model=model, tokenizer=tokenizer)
 
