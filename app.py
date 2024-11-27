@@ -7,13 +7,6 @@ import streamlit as st
 from transformers import GPT2LMHeadModel, GPT2Tokenizer, pipeline
 from transformers import RagTokenizer, RagRetriever, RagTokenForGeneration
 
-# Function to download the Kaggle dataset using API token
-import os
-import subprocess
-import pandas as pd
-import streamlit as st
-
-# Function to download the Kaggle dataset using API token
 def download_kaggle_dataset():
     # Get Kaggle credentials from Streamlit secrets
     kaggle_username = st.secrets["username"]
@@ -30,10 +23,15 @@ def download_kaggle_dataset():
     # Write the Kaggle credentials to a JSON file
     with open("/tmp/.kaggle/kaggle.json", "w") as f:
         f.write(f'{{"username": "{kaggle_username}", "key": "{kaggle_key}"}}')
-    
-    # Download the dataset from Kaggle using the Kaggle API
-    subprocess.run(["kaggle", "datasets", "download", "-d", "jenlooper/language-of-flowers"], check=True)
-    
+
+    # Try downloading the dataset using the Kaggle API and check for success
+    try:
+        subprocess.run(["kaggle", "datasets", "download", "-d", "jenlooper/language-of-flowers"], check=True)
+        st.write("Kaggle dataset download initiated.")
+    except subprocess.CalledProcessError as e:
+        st.error(f"Error during dataset download: {e}")
+        return None
+
     # List all files in the current directory to check where the dataset is located
     download_dir = "/tmp"  # The temporary directory where the dataset is downloaded
     downloaded_files = os.listdir(download_dir)
