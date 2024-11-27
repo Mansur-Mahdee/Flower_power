@@ -3,6 +3,7 @@ import os
 import zipfile
 import pandas as pd
 import re
+import subprocess
 import streamlit as st
 from transformers import GPT2LMHeadModel, GPT2Tokenizer, pipeline
 from transformers import RagTokenizer, RagRetriever, RagTokenForGeneration
