@@ -64,15 +64,6 @@ def download_kaggle_dataset():
     st.write("Dataset found successfully!")
     return dataset_path
 
-
-# Call the function to download or extract dataset
-dataset_path = download_and_extract_dataset() or download_kaggle_dataset()
-
-if dataset_path:
-    st.write(f"Dataset ready at {dataset_path}")
-else:
-    st.write("There was an issue with downloading or extracting the dataset.")
- 
 # Function to extract dataset
 def extract_dataset():
     # Path to the downloaded zip file and extraction directory
@@ -104,6 +95,13 @@ def extract_dataset():
         st.error(f"Zip file not found at {zip_path}")
         return None
 
+# Call the function to download or extract dataset
+dataset_path = extract_dataset() or download_kaggle_dataset()
+
+if dataset_path:
+    st.write(f"Dataset ready at {dataset_path}")
+else:
+    st.write("There was an issue with downloading or extracting the dataset.")
 # Function to get flower information based on the flower name
 def generate_flower_info(flower_name, flower_info_dict, gpt2_pipeline):
     """
