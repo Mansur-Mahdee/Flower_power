@@ -143,7 +143,7 @@ if dataset_path is not None:
 
     # Initialize the RAG model components
     tokenizer = RagTokenizer.from_pretrained("facebook/rag-token-nq")
-    retriever = RagRetriever.from_pretrained("facebook/rag-token-nq", index_name="exact", use_dummy_dataset=True, trust_remote_code=True)
+    retriever = RagRetriever.from_pretrained("facebook/rag-token-nq", index_name="exact", use_dummy_dataset=True)
     model = RagTokenForGeneration.from_pretrained("facebook/rag-token-nq", retriever=retriever)
     tokenizer.pad_token_id = 0
 
