@@ -6,5 +6,5 @@ idleTimeout = 1200  # This will set the idle timeout to 10 minutes
 
 # You can also configure other settings as needed
 headless = true     # Run Streamlit in headless mode
-port = $PORT         # Set the port Streamlit uses
+
 enableCORS = false
