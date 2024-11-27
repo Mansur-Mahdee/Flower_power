@@ -1,4 +1,7 @@
 streamlit
+torch
+tensorflow
+flax
 transformers
 pandas
 kaggle
