@@ -1,6 +1,7 @@
  
 import os
 import re
+import subprocess
 import pandas as pd
 import streamlit as st
 from transformers import GPT2LMHeadModel, GPT2Tokenizer, pipeline
@@ -24,15 +25,11 @@ def download_kaggle_dataset():
     with open("/tmp/.kaggle/kaggle.json", "w") as f:
         f.write(f'{{"username": "{kaggle_username}", "key": "{kaggle_key}"}}')
     
-    # Install necessary packages (if they are not installed already)
-    # It's better to add 'kaggle' to requirements.txt, but for now, we'll install it on the fly
-    subprocess.run(["pip", "install", "kaggle"], check=True)
-    
-    # Download the dataset from Kaggle
+    # Download the dataset from Kaggle using the Kaggle API
     subprocess.run(["kaggle", "datasets", "download", "-d", "jenlooper/language-of-flowers"], check=True)
     
     # Extract the dataset (assuming it's in zip format)
-    subprocess.run(["unzip", "language-of-flowers.zip", "-d", "language_of_flowers"], check=True)
+    subprocess.run(["unzip", "language-of-flowers.zip", "-d", "/tmp/language_of_flowers"], check=True)
     
     # Define the path to the dataset after extraction
     dataset_path = "/tmp/language_of_flowers/language-of-flowers.csv"  # Adjust path after extraction
