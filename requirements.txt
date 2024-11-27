@@ -2,3 +2,5 @@ streamlit
 transformers
 pandas
 kaggle
+datasets
+faiss-cpu
