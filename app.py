@@ -2,10 +2,37 @@
 import os
 import re
 import subprocess
+import zipfile
 import pandas as pd
 import streamlit as st
 from transformers import GPT2LMHeadModel, GPT2Tokenizer, pipeline
 from transformers import RagTokenizer, RagRetriever, RagTokenForGeneration
+def download_and_extract_dataset():
+    # Path to the downloaded zip file and extraction directory
+    zip_path = "/mount/src/flower_power/language-of-flowers.zip"
+    extraction_dir = "/tmp/language_of_flowers"
+    
+    # Check if the zip file exists and unzip it
+    if os.path.exists(zip_path):
+        # Unzip the file
+        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+            zip_ref.extractall(extraction_dir)
+        st.write(f"Dataset unzipped to {extraction_dir}")
+        
+        # Define path to the CSV file inside the extracted folder
+        dataset_path = os.path.join(extraction_dir, "language-of-flowers.csv")
+        
+        # Check if the CSV file exists
+        if os.path.exists(dataset_path):
+            st.write("Dataset file found!")
+            return dataset_path
+        else:
+            st.error(f"CSV file not found in {extraction_dir}")
+            return None
+    else:
+        st.error(f"Zip file not found at {zip_path}")
+        return None
+
 
 def download_kaggle_dataset():
     # Get Kaggle credentials from Streamlit secrets
@@ -43,9 +70,17 @@ def download_kaggle_dataset():
     # Look for the dataset file (assume it's in the current directory after download)
     dataset_path = None
     for file in downloaded_files:
-        if file.endswith('.csv'):
-            dataset_path = os.path.join(download_dir, file)
-            break
+        if file.endswith('.zip'):  # Check for zip file
+            zip_file_path = os.path.join(download_dir, file)
+            # Now extract it
+            with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
+                zip_ref.extractall(download_dir)
+            st.write(f"Dataset extracted from {zip_file_path}")
+            # Search for CSV file in the extracted directory
+            for extracted_file in os.listdir(download_dir):
+                if extracted_file.endswith('.csv'):
+                    dataset_path = os.path.join(download_dir, extracted_file)
+                    break
 
     # Check if dataset file exists
     if not dataset_path:
@@ -56,12 +91,14 @@ def download_kaggle_dataset():
     st.write("Dataset found successfully!")
     return dataset_path
 
-# Call the function and use the dataset
-dataset_path = download_kaggle_dataset()
-if dataset_path:
-    data = pd.read_csv(dataset_path)
-    st.write(data.head())
 
+# Call the function to download or extract dataset
+dataset_path = download_and_extract_dataset() or download_kaggle_dataset()
+
+if dataset_path:
+    st.write(f"Dataset ready at {dataset_path}")
+else:
+    st.write("There was an issue with downloading or extracting the dataset.")
 
 # Call the function and use the dataset
 dataset_path = download_kaggle_dataset()
