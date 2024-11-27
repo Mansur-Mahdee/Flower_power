@@ -141,7 +141,7 @@ if dataset_path is not None:
     # Create a dictionary to map flower names to meanings
     flower_info_dict = dict(zip(data['Flower'], data['Meaning']))
 
-    dataset = load_dataset("wiki_dpr", trust_remote_code=True)
+    dataset = load_dataset("wiki_dpr","psgs_w100.nq.exact", trust_remote_code=True)
     tokenizer = RagTokenizer.from_pretrained("facebook/rag-token-nq")
     retriever = RagRetriever.from_pretrained(
         "facebook/rag-token-nq", 
