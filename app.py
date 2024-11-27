@@ -53,8 +53,7 @@ def generate_flower_info(flower_name, flower_info_dict):
     sentences = re.split(r'(?<=\w[.!?])\s+', generated_info.strip())
 
     # Limit the output to the first 5 sentences
-    limited_output = "
-".join(sentences[:5])
+    limited_output = "".join(sentences[:5])
 
     return flower_name, flower_description, limited_output
 
