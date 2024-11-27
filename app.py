@@ -28,20 +28,16 @@ def download_kaggle_dataset():
     # Download the dataset from Kaggle using the Kaggle API
     subprocess.run(["kaggle", "datasets", "download", "-d", "jenlooper/language-of-flowers"], check=True)
     
-    # Extract the dataset (assuming it's in zip format)
-    subprocess.run(["unzip", "language-of-flowers.zip", "-d", "/tmp/language_of_flowers"], check=True)
-    
-    # Define the path to the dataset after extraction
-    dataset_path = "/tmp/language_of_flowers/language-of-flowers.csv"  # Adjust path after extraction
-    
-    # Check if dataset exists
-    if os.path.exists(dataset_path):
-        st.write("Dataset downloaded and extracted successfully!")
-    else:
+    # Path to the dataset (no need to unzip)
+    dataset_path = "/root/.cache/kagglehub/datasets/jenlooper/language-of-flowers/versions/2/language-of-flowers.csv"
+
+    # Check if the dataset file exists
+    if not os.path.exists(dataset_path):
         st.error(f"Dataset file not found at {dataset_path}")
         return None
     
-    # Return the dataset path
+    # If the file exists, return the dataset path
+    st.write("Dataset found successfully!")
     return dataset_path
 
 # Call the function and use the dataset
