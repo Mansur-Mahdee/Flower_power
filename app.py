@@ -77,7 +77,13 @@ def generate_flower_info(flower_name, flower_info_dict, gpt2_pipeline):
 
 if dataset_path is not None:
     # Load dataset into DataFrame
-    data = pd.read_csv(dataset_path,quotechar='"', on_bad_lines='skip')
+    try:
+        data = pd.read_csv("path_to_your_csv_file.csv", quotechar='"', encoding='utf-8', on_bad_lines='skip')
+        st.write(data.columns)  # Display column names
+        flower_info_dict = dict(zip(data['Flower'], data['Meaning']))  # This line is where the error occurred
+        st.write(flower_info_dict)
+    except Exception as e:
+        st.error(f"Error reading CSV: {e}")
 
     # Create a dictionary to map flower names to meanings
     flower_info_dict = dict(zip(data['Flower'], data['Meaning']))
