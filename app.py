@@ -5,7 +5,7 @@ import requests
 import streamlit as st
 from transformers import GPT2LMHeadModel, GPT2Tokenizer, pipeline
 from transformers import RagTokenizer, RagRetriever, RagTokenForGeneration
-from datasets import load_dataset
+from datasets import Dataset
 
 # Function to download the dataset from GitHub
 @st.cache_resource
