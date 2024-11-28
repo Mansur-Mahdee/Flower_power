@@ -10,7 +10,7 @@ from datasets import load_dataset
 @st.cache_resource
 def download_dataset_from_github():
     # URL of the CSV file on GitHub
-    github_url = "https://github.com/Mansur-Mahdee/Flower_power/blob/main/data/language-of-flowers.csv"
+    github_url = "https://raw.githubusercontent.com/Mansur-Mahdee/Flower_power/refs/heads/main/data/language-of-flowers.csv"
     
     # Define the path to save the dataset
     dataset_path = "/tmp/language-of-flowers.csv"
