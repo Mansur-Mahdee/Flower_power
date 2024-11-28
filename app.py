@@ -109,7 +109,8 @@ if dataset_path is not None:
         "facebook/rag-token-nq", 
         index_name="exact", 
         use_dummy_dataset=True, 
-        trust_remote_code=True  # Add trust_remote_code=True to the retriever)
+        trust_remote_code=True  # Add trust_remote_code=True to the retriever
+    )
     model = RagTokenForGeneration.from_pretrained("facebook/rag-token-nq", retriever=retriever)
     tokenizer.pad_token_id = 0
     rag_pipeline = pipeline("text-generation", model=model, tokenizer=tokenizer)
