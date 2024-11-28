@@ -37,7 +37,7 @@ def download_and_extract_dataset():
     # Download dataset from Kaggle
     try:
         result = subprocess.run(
-            ["kaggle", "datasets", "download", "-d", "jenlooper/language-of-flowers"],
+            ["kaggle", "datasets", "download", "-d", "jenlooper/language-of-flowers", "--force"],
             check=True,
             stderr=subprocess.PIPE,
             stdout=subprocess.PIPE
