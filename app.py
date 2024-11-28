@@ -70,7 +70,6 @@ def check_and_download_dataset():
     else:
         return download_kaggle_dataset()
 
-@st.cache_resource
 # Function to extract dataset
 def extract_dataset():
     # Path to the downloaded zip file and extraction directory
