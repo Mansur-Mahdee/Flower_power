@@ -77,7 +77,7 @@ def generate_flower_info(flower_name, flower_info_dict, gpt2_pipeline):
 
 if dataset_path is not None:
     # Load the dataset with proper encoding and handling of bad lines
-    data = pd.read_csv("/tmp/language-of-flowers.csv", quotechar='"', encoding='utf-8', on_bad_lines='skip')
+    data = pd.read_csv("/tmp/language-of-flowers.csv", quotechar='"', encoding='utf-8-sig', on_bad_lines='skip')
     st.write(data.head())
     # Display the column names for debugging
     st.write("Column names:", data.columns)
