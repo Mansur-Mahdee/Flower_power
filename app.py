@@ -47,12 +47,6 @@ def download_and_extract_dataset():
     except subprocess.CalledProcessError as e:
         st.error(f"Error during dataset download: {e.stderr.decode()}")
         return None
-    zip_file_path = "/mount/src/flower_power/language-of-flowers.zip"  # Adjust path if needed
-    extraction_dir = "/tmp/language_of_flowers"
-
-    with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
-        zip_ref.extractall(extraction_dir)
-    st.write(f"Dataset extracted to {extraction_dir}")
 
     # List files in the temporary directory
     download_dir = "/tmp"
