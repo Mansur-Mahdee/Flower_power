@@ -77,7 +77,7 @@ def generate_flower_info(flower_name, flower_info_dict, gpt2_pipeline):
 
 if dataset_path is not None:
     # Load dataset into DataFrame
-    data = pd.read_csv(dataset_path)
+    data = pd.read_csv(dataset_path,quotechar='"', on_bad_lines='skip')
 
     # Create a dictionary to map flower names to meanings
     flower_info_dict = dict(zip(data['Flower'], data['Meaning']))
