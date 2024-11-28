@@ -37,8 +37,7 @@ def download_kaggle_dataset():
         return None
 
     download_dir = "/tmp"
-    downloaded_files = os.listdir(download_dir)
-    
+    downloaded_files = os.listdir(download_dir) 
     st.write("Downloaded files:")
     st.write(downloaded_files)
 
@@ -69,7 +68,7 @@ def check_and_download_dataset():
         return dataset_path
     else:
         return download_kaggle_dataset()
-
+@st.cache_resource
 # Function to extract dataset
 def extract_dataset():
     # Path to the downloaded zip file and extraction directory
