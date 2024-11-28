@@ -57,14 +57,20 @@ def streamlit_app():
         gpt2_pipeline = pipeline("text-generation", model=gpt2_model, tokenizer=gpt2_tokenizer)
 
         # Initialize RAG models for nearest flower retrieval
-        dataset=load_dataset("csv", data_files=dataset_path, split="train")
+        data = pd.read_csv("/tmp/language-of-flowers.csv")
+        
+        data = data.rename(columns={'Flower': 'title', 'Meaning': 'text'})
+
+        # Convert it into a Hugging Face Dataset
+        dataset = Dataset.from_pandas(data[['title', 'text']])
+
         tokenizer = RagTokenizer.from_pretrained("facebook/rag-token-nq")
         retriever = RagRetriever.from_pretrained(
-            "facebook/rag-token-nq", 
-            index_name="exact", 
-            use_dummy_dataset=True, 
-            trust_remote_code=True  # Add trust_remote_code=True to the retriever
-        )
+            "facebook/rag-token-nq",
+            index_name="custom",  # Custom index name
+            use_dummy_dataset=False,
+            dataset=dataset 
+)
         model = RagTokenForGeneration.from_pretrained("facebook/rag-token-nq", retriever=retriever)
         tokenizer.pad_token_id = 0
         rag_pipeline = pipeline("text-generation", model=model, tokenizer=tokenizer)
