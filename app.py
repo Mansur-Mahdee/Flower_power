@@ -57,6 +57,7 @@ def streamlit_app():
         gpt2_pipeline = pipeline("text-generation", model=gpt2_model, tokenizer=gpt2_tokenizer)
 
         # Initialize RAG models for nearest flower retrieval
+        dataset=load_dataset("csv", data_files=dataset_path, split="train")
         tokenizer = RagTokenizer.from_pretrained("facebook/rag-token-nq")
         retriever = RagRetriever.from_pretrained(
             "facebook/rag-token-nq", 
