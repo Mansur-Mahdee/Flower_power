@@ -78,10 +78,24 @@ def generate_flower_info(flower_name, flower_info_dict, gpt2_pipeline):
 if dataset_path is not None:
     # Load dataset into DataFrame
     try:
-        data = pd.read_csv(dataset_path, quotechar='"', encoding='utf-8', on_bad_lines='skip')
-        st.write(data.columns)  # Display column names
-        flower_info_dict = dict(zip(data['Flower'], data['Meaning']))  # This line is where the error occurred
-        st.write(flower_info_dict)
+        # Load the dataset and ensure proper handling of empty spaces and missing values
+        data = pd.read_csv("/tmp/language-of-flowers.csv", quotechar='"', encoding='utf-8', on_bad_lines='skip')
+
+    # Strip spaces from column names to ensure proper access
+        data.columns = data.columns.str.strip()
+
+    # Display the column names to check if the columns are correctly named
+        st.write(data.columns)
+
+    # Remove the 'Color' column if it is not necessary for the dictionary creation
+        data_cleaned = data[['Flower', 'Meaning']]
+
+    # Display the first few rows of the cleaned data to check
+        st.write(data_cleaned.head())
+
+    # Create the flower-info dictionary
+        flower_info_dict = dict(zip(data_cleaned['Flower'], data_cleaned['Meaning']))
+
     except Exception as e:
         st.error(f"Error reading CSV: {e}")
 
