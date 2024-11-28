@@ -76,28 +76,29 @@ def generate_flower_info(flower_name, flower_info_dict, gpt2_pipeline):
 
 
 if dataset_path is not None:
-    # Load dataset into DataFrame
-    try:
-        # Load the dataset and ensure proper handling of empty spaces and missing values
-        data = pd.read_csv("/tmp/language-of-flowers.csv", quotechar='"', encoding='utf-8', on_bad_lines='skip')
+    # Load the dataset with proper encoding and handling of bad lines
+    data = pd.read_csv("/tmp/language-of-flowers.csv", quotechar='"', encoding='utf-8', on_bad_lines='skip')
+    st.write(data.head())
+    # Display the column names for debugging
+    st.write("Column names:", data.columns)
 
-    # Strip spaces from column names to ensure proper access
-        data.columns = data.columns.str.strip()
+    # Strip spaces and clean up any unwanted characters in column names
+    data.columns = data.columns.str.strip()
 
-    # Display the column names to check if the columns are correctly named
-        st.write(data.columns)
+    # Check if the column names are as expected
+    st.write("Cleaned column names:", data.columns)
 
-    # Remove the 'Color' column if it is not necessary for the dictionary creation
+    # Check the first few rows of the dataset
+    st.write("First few rows of the dataset:", data.head())
+
+    # Now, let's attempt to create the dictionary only with 'Flower' and 'Meaning'
+    if 'Flower' in data.columns and 'Meaning' in data.columns:
         data_cleaned = data[['Flower', 'Meaning']]
-
-    # Display the first few rows of the cleaned data to check
-        st.write(data_cleaned.head())
-
-    # Create the flower-info dictionary
         flower_info_dict = dict(zip(data_cleaned['Flower'], data_cleaned['Meaning']))
+        st.write(flower_info_dict)
+    else:
+        st.error("The expected 'Flower' and 'Meaning' columns are missing or named incorrectly.")
 
-    except Exception as e:
-        st.error(f"Error reading CSV: {e}")
 
     # Create a dictionary to map flower names to meanings
     flower_info_dict = dict(zip(data['Flower'], data['Meaning']))
@@ -108,8 +109,7 @@ if dataset_path is not None:
         "facebook/rag-token-nq", 
         index_name="exact", 
         use_dummy_dataset=True, 
-        trust_remote_code=True  # Add trust_remote_code=True to the retriever
-)
+        trust_remote_code=True  # Add trust_remote_code=True to the retriever)
     model = RagTokenForGeneration.from_pretrained("facebook/rag-token-nq", retriever=retriever)
     tokenizer.pad_token_id = 0
     rag_pipeline = pipeline("text-generation", model=model, tokenizer=tokenizer)
