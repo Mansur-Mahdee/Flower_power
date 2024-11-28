@@ -78,7 +78,7 @@ def generate_flower_info(flower_name, flower_info_dict, gpt2_pipeline):
 if dataset_path is not None:
     # Load dataset into DataFrame
     try:
-        data = pd.read_csv("path_to_your_csv_file.csv", quotechar='"', encoding='utf-8', on_bad_lines='skip')
+        data = pd.read_csv(dataset_path, quotechar='"', encoding='utf-8', on_bad_lines='skip')
         st.write(data.columns)  # Display column names
         flower_info_dict = dict(zip(data['Flower'], data['Meaning']))  # This line is where the error occurred
         st.write(flower_info_dict)
