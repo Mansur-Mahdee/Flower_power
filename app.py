@@ -64,6 +64,7 @@ def download_and_extract_dataset():
     zip_file_path = None
     for file in downloaded_files:
         if file.endswith('.zip'):
+            st.write("FOUND THE DATA")
             zip_file_path = os.path.join(download_dir, file)
             break
 
