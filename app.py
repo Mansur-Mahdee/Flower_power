@@ -1,98 +1,51 @@
- 
 import os
-import zipfile
 import pandas as pd
 import re
-import subprocess
+import requests
 import streamlit as st
 from transformers import GPT2LMHeadModel, GPT2Tokenizer, pipeline
 from transformers import RagTokenizer, RagRetriever, RagTokenForGeneration
 from datasets import load_dataset
 
-
 @st.cache_resource
-def download_and_extract_dataset():
-    # Path to the dataset extraction directory and CSV file
-    extraction_dir = "/tmp/language_of_flowers"
-    dataset_path = os.path.join(extraction_dir, "language-of-flowers.csv")
+def download_dataset_from_github():
+    # URL of the CSV file on GitHub
+    github_url = "https://github.com/Mansur-Mahdee/Flower_power/blob/main/data/language-of-flowers.csv"
     
-    # Check if the dataset CSV already exists
+    # Define the path to save the dataset
+    dataset_path = "/tmp/language-of-flowers.csv"
+    
+    # Check if the dataset already exists
     if os.path.exists(dataset_path):
-        st.write("Dataset already exists, skipping download and extraction.")
+        st.write("Dataset already exists, skipping download.")
         return dataset_path
 
-    # If not, proceed to download the dataset
-    kaggle_username = st.secrets["username"]
-    kaggle_key = st.secrets["key"]
-    
-    if not kaggle_username or not kaggle_key:
-        st.error("Kaggle API token not found in Streamlit secrets. Please add your 'kaggle.json' details.")
-        return None
-
-    # Set up Kaggle credentials
-    os.makedirs('/tmp/.kaggle', exist_ok=True)
-    with open("/tmp/.kaggle/kaggle.json", "w") as f:
-        f.write(f'{{"username": "{kaggle_username}", "key": "{kaggle_key}"}}')
-
-    # Download dataset from Kaggle
+    # Download the CSV file from GitHub
     try:
-        result = subprocess.run(
-            ["kaggle", "datasets", "download", "-d", "jenlooper/language-of-flowers", "--force"],
-            check=True,
-            stderr=subprocess.PIPE,
-            stdout=subprocess.PIPE
-        )
-        st.write(result.stdout.decode())  # Log the output of the download
-        st.write(result.stderr.decode())  # Log any error messages if they exist
-    except subprocess.CalledProcessError as e:
-        st.error(f"Error during dataset download: {e.stderr.decode()}")
+        response = requests.get(github_url)
+        response.raise_for_status()  # Raise an exception for 4xx/5xx errors
+
+        # Save the content as a CSV file
+        with open(dataset_path, 'wb') as f:
+            f.write(response.content)
+
+        st.write(f"Downloaded dataset from GitHub to {dataset_path}")
+        
+    except requests.exceptions.RequestException as e:
+        st.error(f"Error during dataset download: {e}")
         return None
+    
+    return dataset_path
 
-    # List files in the temporary directory
-    download_dir = "/tmp"
-    downloaded_files = os.listdir(download_dir)
-    st.write("Downloaded files:")
-    st.write(downloaded_files)
-
-    # Check if the dataset is already a CSV (no need to unzip)
-    for file in downloaded_files:
-        if file.endswith('.csv'):
-            st.write(f"CSV file found directly: {file}")
-            return os.path.join(download_dir, file)
-
-    # If no CSV found, check for a ZIP file and extract it
-    zip_file_path = None
-    for file in downloaded_files:
-        if file.endswith('.zip'):
-            st.write("FOUND THE DATA")
-            zip_file_path = os.path.join(download_dir, file)
-            break
-
-    if not zip_file_path:
-        st.error("No CSV or ZIP file found in the downloaded files.")
-        return None
-
-    # Extract the ZIP file if found
-    with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
-        zip_ref.extractall(extraction_dir)
-    st.write(f"Dataset extracted to {extraction_dir}")
-
-    # Now check if the CSV file exists in the extraction directory
-    if os.path.exists(dataset_path):
-        st.write("Dataset file found!")
-        return dataset_path
-    else:
-        st.error(f"CSV file not found after extraction in {extraction_dir}")
-        return None
-
-
-# Call the function to download or extract dataset
-dataset_path = download_and_extract_dataset()
+# Call the function to download the dataset from GitHub
+dataset_path = download_dataset_from_github()
 
 if dataset_path:
     st.write(f"Dataset ready at {dataset_path}")
 else:
-    st.write("There was an issue with downloading or extracting the dataset.")
+    st.write("There was an issue with downloading the dataset.")
+
+
 # Function to get flower information based on the flower name
 def generate_flower_info(flower_name, flower_info_dict, gpt2_pipeline):
     """
@@ -120,6 +73,7 @@ def generate_flower_info(flower_name, flower_info_dict, gpt2_pipeline):
     limited_output = "".join(sentences[:5])
 
     return flower_name, flower_description, limited_output
+
 
 if dataset_path is not None:
     # Load dataset into DataFrame
@@ -170,7 +124,4 @@ if dataset_path is not None:
         streamlit_app()
 
 else:
-    st.write("There was an issue with extracting or loading the dataset.")
-
-
-
+    st.write("There was an issue with downloading or loading the dataset.")
